@@ -19,9 +19,4 @@ export default defineConfig({
 		globals: true,
 		environment: 'happy-dom',
 	},
-	build: {
-		rollupOptions: {
-			external: ['redux'],
-		},
-	},
 });
