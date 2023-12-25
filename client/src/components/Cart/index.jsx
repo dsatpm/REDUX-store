@@ -1,21 +1,34 @@
+// import React dependencies
 import { useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
+import { useSelector, useDispatch } from 'react-redux';
+
+// import apollo dependency
 import { useLazyQuery } from '@apollo/react-hooks';
+
+// import Stripe dependency
+import { loadStripe } from '@stripe/stripe-js';
+
+// import utils, actions, auths, and queries
+import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from '../../utils/actions';
 import { QUERY_CHECKOUT } from '../../utils/queries';
 import { idbPromise } from '../../utils/helpers';
-import CartItem from '../CartItem';
 import Auth from '../../utils/auth';
-import { useSelector, useDispatch } from 'react-redux';
-import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from '../../utils/actions';
+
+// import components
+import CartItem from '../CartItem';
+
+// import css
 import './style.css';
 
+// initialize stripe promise
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const Cart = () => {
-	const cart = useSelector((state) => state.cart);
 	const dispatch = useDispatch();
+	const cart = useSelector((state) => state.cart);
 	const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
 
+	// if data is returned from useLazyQuery, redirect to checkout
 	useEffect(() => {
 		if (data) {
 			stripePromise.then((res) => {
@@ -24,6 +37,7 @@ const Cart = () => {
 		}
 	}, [data]);
 
+	// if cart has data, get items from session and populate cart
 	useEffect(() => {
 		async function getCart() {
 			const cart = await idbPromise('cart', 'get');
@@ -35,10 +49,12 @@ const Cart = () => {
 		}
 	}, [cart.length, dispatch]);
 
+	// toggle cart when icon is clicked
 	function toggleCart() {
 		dispatch({ type: TOGGLE_CART });
 	}
 
+	// loop through each cart item and calculate total
 	function calculateTotal() {
 		let sum = 0;
 		cart.forEach((item) => {
@@ -47,6 +63,7 @@ const Cart = () => {
 		return sum.toFixed(2);
 	}
 
+	// loop through each cart item and add item._id to productIds array
 	function submitCheckout() {
 		const productIds = [];
 
