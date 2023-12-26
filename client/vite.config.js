@@ -19,4 +19,11 @@ export default defineConfig({
 		globals: true,
 		environment: 'happy-dom',
 	},
+	build: {
+		outDir: '../client/dist'
+	},
+	base: './',
+	esbuild: {
+		target: 'es2015'
+	},
 });
